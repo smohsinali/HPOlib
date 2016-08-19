@@ -3,7 +3,8 @@ import abc
 import ConfigSpace
 import numpy as np
 
-import hpolib.abstract_benchmark as abstract_benchmark
+# import hpolib.abstract_benchmark as abstract_benchmark
+import abstract_benchmark
 
 
 class AbstractContinuousBenchmark(abstract_benchmark.AbstractBenchmark):

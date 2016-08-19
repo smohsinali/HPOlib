@@ -1,6 +1,6 @@
 import numpy as np
 
-from hpolib.continuous_benchmark import AbstractContinuousBenchmark
+from package.hpolib.continuous_benchmark import AbstractContinuousBenchmark
 
 
 class Branin(AbstractContinuousBenchmark):

@@ -1,15 +1,14 @@
 import numpy as np
 
-import benchmarks.branin as branin
+from benchmarks import lda_on_grid
 
-
-b = branin.Branin()
+b = lda_on_grid.LDA()
 
 values = []
 
 cs = b.get_configuration_space()
 
-for i in range(10000):
+for i in range(20):
     configuration = cs.sample_configuration()
     # Configuration does not yet implement __len__, so we have to call
     # get_dictionary for now!
@@ -18,4 +17,5 @@ for i in range(10000):
 
     values.append(loss)
 
+# print(values)
 print(np.min(values))
