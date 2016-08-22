@@ -1,7 +1,5 @@
 import numpy as np
-
 from benchmarks import svm_on_grid
-
 
 b = svm_on_grid.SVM()
 

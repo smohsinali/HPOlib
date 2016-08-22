@@ -1,21 +1,12 @@
 import sys
 import numpy as np
+import ConfigSpace
+from package.hpolib.abstract_benchmark import AbstractBenchmark
 
 
-from package.hpolib.continuous_benchmark import AbstractContinuousBenchmark
-
-
-class SVM(AbstractContinuousBenchmark):
+class SVM(AbstractBenchmark):
 
     def objective_function(self, params):
-        # if "C" not in params or "alpha" not in params or "epsilon" not in params:
-        #     sys.stderr.write("No params found ['C', 'alpha', 'epsilon']: %s\n" %
-        #                      str(params))
-        #     return float("NaN")
-        # c = params["C"]
-        # alpha = params["alpha"]
-        # epsilon = params["epsilon"]
-
         if len(params) != 3:
             sys.stderr.write("No params found ['C', 'alpha', 'epsilon']: %s\n" %
                              str(params))
@@ -46,12 +37,53 @@ class SVM(AbstractContinuousBenchmark):
         upper = np.array([24, 13, 3])
         return lower, upper
 
+    def get_configuration_space(cls):
+        lower, upper = cls.get_lower_and_upper_bounds()
+        cs = ConfigSpace.ConfigurationSpace()
+        for i, (l, u) in enumerate(zip(lower, upper)):
+            hp = ConfigSpace.UniformFloatHyperparameter('X%d' % i, l, u)
+            cs.add_hyperparameter(hp)
+        return cs
+
     # def get_meta_information(self):
     #     return {'num_function_evals': 20,
     #             'optima': ([[-np.pi, 12.275],
     #                         [np.pi, 2.275],
     #                         [9.42478, 2.475]]),
     #             'f_opt': 0.397887}
+
+    def evaluate_dict(self, configuration):
+        """
+
+        Parameters
+        ----------
+        configuration : dict-like
+
+        Returns
+        -------
+        dict
+        """
+        configuration = self._convert_dict_to_array(configuration)
+
+        # TODO do we want input checking here?
+        rval = self.objective_function(configuration)
+        # TODO do we want output checking here?
+        return rval
+
+    def _convert_dict_to_array(self, configuration):
+        l, _ = self.get_lower_and_upper_bounds()
+
+        if len(l) != len(configuration):
+            raise ValueError('Configuration should have %d elements, but has '
+                             '%d!' % (len(l), len(configuration)))
+
+        num_hyperparameters = len(l)
+        array = np.ndarray((num_hyperparameters,))
+        for i in range(num_hyperparameters):
+            value = configuration['X%d' % i]
+            array[i] = value
+
+        return array
 
     def svm_on_grid(self, c, alpha, epsilon, ret_time=False):
         # Values for an 24*14*4 grid search which was performed by Miller et. al.

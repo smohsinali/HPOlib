@@ -35,7 +35,7 @@ class AbstractBenchmark(object):
         dict
             Mapping which at least contains the key `function_value`.
         """
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def objective_function_test(self, configuration):
@@ -52,7 +52,7 @@ class AbstractBenchmark(object):
         -------
         dict
         """
-        pass
+        raise NotImplementedError
 
     def evaluate_dict(self, configuration):
         """
@@ -101,7 +101,7 @@ class AbstractBenchmark(object):
     @classmethod
     @abc.abstractmethod
     def get_configuration_space(cls):
-        pass
+        raise NotImplementedError
 
     def get_meta_information(self):
         return {}

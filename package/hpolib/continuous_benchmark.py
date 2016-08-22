@@ -13,12 +13,12 @@ class AbstractContinuousBenchmark(abstract_benchmark.AbstractBenchmark):
     @abc.abstractmethod
     def objective_function(self, configuration):
         """Only here to have a different docstring"""
-        pass
+        raise NotImplementedError
 
     @abc.abstractmethod
     def objective_function_test(self, configuration):
         """Only here to have a different docstring"""
-        pass
+        raise NotImplementedError
 
     def evaluate_dict(self, configuration):
         """
@@ -108,7 +108,7 @@ class AbstractContinuousBenchmark(abstract_benchmark.AbstractBenchmark):
     @staticmethod
     @abc.abstractmethod
     def get_lower_and_upper_bounds():
-        pass
+        raise NotImplementedError
 
     @classmethod
     def get_configuration_space(cls):

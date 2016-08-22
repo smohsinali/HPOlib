@@ -1,5 +1,4 @@
 import numpy as np
-
 from benchmarks import lda_on_grid
 
 b = lda_on_grid.LDA()
@@ -17,5 +16,4 @@ for i in range(20):
 
     values.append(loss)
 
-# print(values)
 print(np.min(values))
