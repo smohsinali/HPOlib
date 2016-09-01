@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-
+import ConfigSpace
 
 from package.hpolib.continuous_benchmark import AbstractContinuousBenchmark
 
@@ -14,9 +14,9 @@ class LDA(AbstractContinuousBenchmark):
                              str(params))
             return float("NaN")
 
-        kappa = params[0]
-        tau = params[1]
-        s = params[2]
+        kappa = params['-kappa']
+        tau = params['-tau']
+        s = params['-s']
 
         if hasattr(kappa, "__len__"):
             kappa = kappa[0]
@@ -28,7 +28,8 @@ class LDA(AbstractContinuousBenchmark):
         s = int(float(s))
         # print(params)
         func_val = self.lda_on_grid(kappa, tau, s)
-        return {'function_value': func_val}
+        # return {'function_value': func_val}
+        return {'function_value': func_val[0], 'time': func_val[1]}
 
     def objective_function_test(self, x):
         return self.objective_function(x)
@@ -57,12 +58,24 @@ class LDA(AbstractContinuousBenchmark):
         -------
         dict
         """
-        configuration = self._convert_dict_to_array(configuration)
+        # configuration = self._convert_dict_to_array(configuration)
 
         # TODO do we want input checking here?
         rval = self.objective_function(configuration)
         # TODO do we want output checking here?
         return rval
+
+    def get_configuration_space(cls):
+            # lower, upper = cls.get_lower_and_upper_bounds()
+            cs = ConfigSpace.ConfigurationSpace()
+            hp = ConfigSpace.UniformIntegerHyperparameter(name='kappa', lower=0, upper=5)
+            cs.add_hyperparameter(hp)
+            hp = ConfigSpace.UniformIntegerHyperparameter(name='tau', lower=0, upper=5)
+            cs.add_hyperparameter(hp)
+            hp = ConfigSpace.UniformIntegerHyperparameter(name='s', lower=0, upper=7)
+            cs.add_hyperparameter(hp)
+
+            return cs
 
     def _convert_dict_to_array(self, configuration):
         l, _ = self.get_lower_and_upper_bounds()
@@ -395,7 +408,5 @@ class LDA(AbstractContinuousBenchmark):
             config_tree[config[0]][config[1]][config[2]][1] = config[4]
 
         print kappa, tau, s
-        if ret_time:
-            return config_tree[kappa_values[kappa]][tau_values[tau]][s_values[s]][1]
-        else:
-            return config_tree[kappa_values[kappa]][tau_values[tau]][s_values[s]][0]
+        return [config_tree[kappa_values[kappa]][tau_values[tau]][s_values[s]][0],
+                config_tree[kappa_values[kappa]][tau_values[tau]][s_values[s]][1]]

@@ -16,5 +16,4 @@ for i in range(20):
 
     values.append(loss)
 
-# print(values)
 print(np.min(values))

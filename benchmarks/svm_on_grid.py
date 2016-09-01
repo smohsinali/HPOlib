@@ -8,13 +8,13 @@ class SVM(AbstractBenchmark):
 
     def objective_function(self, params):
         if len(params) != 3:
-            sys.stderr.write("No params found ['C', 'alpha', 'epsilon']: %s\n" %
+            sys.stderr.write("No params found ['c', 'alpha', 'epsilon']: %s\n" %
                              str(params))
             return float("NaN")
-
-        c = params[0]
-        alpha = params[1]
-        epsilon = params[2]
+        print(params)
+        c = params['-c']
+        alpha = params['-alpha']
+        epsilon = params['-epsilon']
 
         if hasattr(c, "__len__"):
             c = c[0]
@@ -26,23 +26,21 @@ class SVM(AbstractBenchmark):
         epsilon = int(float(epsilon))
         # print(params)
         func_val = self.svm_on_grid(c=c, alpha=alpha, epsilon=epsilon)
-        return {'function_value': func_val}
+        return {'function_value': func_val[0], 'time': func_val[1]}
 
     def objective_function_test(self, x):
         return self.objective_function(x)
 
-    @staticmethod
-    def get_lower_and_upper_bounds():
-        lower = np.array([0, 0, 0])
-        upper = np.array([24, 13, 3])
-        return lower, upper
-
     def get_configuration_space(cls):
-        lower, upper = cls.get_lower_and_upper_bounds()
+        # lower, upper = cls.get_lower_and_upper_bounds()
         cs = ConfigSpace.ConfigurationSpace()
-        for i, (l, u) in enumerate(zip(lower, upper)):
-            hp = ConfigSpace.UniformFloatHyperparameter('X%d' % i, l, u)
-            cs.add_hyperparameter(hp)
+        hp = ConfigSpace.UniformIntegerHyperparameter(name='c', lower=0, upper=24)
+        cs.add_hyperparameter(hp)
+        hp = ConfigSpace.UniformIntegerHyperparameter(name='alpha', lower=0, upper=13)
+        cs.add_hyperparameter(hp)
+        hp = ConfigSpace.UniformIntegerHyperparameter(name='epsilon', lower=0, upper=3)
+        cs.add_hyperparameter(hp)
+
         return cs
 
     # def get_meta_information(self):
@@ -63,7 +61,7 @@ class SVM(AbstractBenchmark):
         -------
         dict
         """
-        configuration = self._convert_dict_to_array(configuration)
+        # configuration = self._convert_dict_to_array(configuration)
 
         # TODO do we want input checking here?
         rval = self.objective_function(configuration)
@@ -71,18 +69,19 @@ class SVM(AbstractBenchmark):
         return rval
 
     def _convert_dict_to_array(self, configuration):
-        l, _ = self.get_lower_and_upper_bounds()
+        # l, _ = self.get_lower_and_upper_bounds()
 
-        if len(l) != len(configuration):
-            raise ValueError('Configuration should have %d elements, but has '
-                             '%d!' % (len(l), len(configuration)))
+        # if len(l) != len(configuration):
+        #     raise ValueError('Configuration should have %d elements, but has '
+        #                      '%d!' % (len(l), len(configuration)))
 
-        num_hyperparameters = len(l)
+        num_hyperparameters = len(configuration)
         array = np.ndarray((num_hyperparameters,))
         for i in range(num_hyperparameters):
             value = configuration['X%d' % i]
             array[i] = value
-
+        print configuration
+        print array
         return array
 
     def svm_on_grid(self, c, alpha, epsilon, ret_time=False):
@@ -1536,7 +1535,9 @@ class SVM(AbstractBenchmark):
             config_tree[config[0]][config[1]][config[2]][1] = config[4]
 
         print c, alpha, epsilon
-        if ret_time:
-            return config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][1]
-        else:
-            return config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][0]
+        # if ret_time:
+        #     return config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][1]
+        # else:
+        #     return config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][0]
+        return [config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][0],
+                config_tree[c_values[c]][alpha_values[alpha]][epsilon_values[epsilon]][1]]
