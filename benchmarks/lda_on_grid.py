@@ -1,6 +1,6 @@
 import sys
 import numpy as np
-import ConfigSpace
+
 
 from package.hpolib.continuous_benchmark import AbstractContinuousBenchmark
 
@@ -66,6 +66,8 @@ class LDA(AbstractContinuousBenchmark):
         return rval
 
     def get_configuration_space(cls):
+            import ConfigSpace
+
             # lower, upper = cls.get_lower_and_upper_bounds()
             cs = ConfigSpace.ConfigurationSpace()
             hp = ConfigSpace.UniformIntegerHyperparameter(name='kappa', lower=0, upper=5)
